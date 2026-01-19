@@ -20,9 +20,15 @@ def divide(x, y):
     return x / y
 
 
-def get_number(prompt):
+def get_number(prompt, last_result=None):
     """Get a valid number input from the user."""
     while True:
+        # Offer to use last result as first number
+        if last_result is not None and "first" in prompt.lower():
+            use_last = input(f"Use last result ({last_result}) as first number? (yes/no): ").strip().lower()
+            if use_last in ['yes', 'y']:
+                return last_result
+        
         try:
             return float(input(prompt))
         except ValueError:
@@ -59,10 +65,12 @@ def main():
     print("        Simple Calculator")
     print("=" * 40)
     
+    last_result = None
+    
     while True:
         try:
             # Get input numbers
-            num1 = get_number("Enter first number: ")
+            num1 = get_number("Enter first number: ", last_result)
             num2 = get_number("Enter second number: ")
             
             # Get operation
@@ -73,6 +81,9 @@ def main():
             
             # Display result
             print(f"\n{num1} {operation_symbol} {num2} = {result}")
+            
+            # Store result for next calculation
+            last_result = result
             
         except ValueError as e:
             print(f"\n{e}")
@@ -87,3 +98,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
