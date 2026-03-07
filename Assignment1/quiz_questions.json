@@ -31,37 +31,37 @@
             "explanation": "A Luau is a traditional Hawaiian feast with food, music, and hula dancing."
         }
     ],
-    "UH Manoa": [
+    "Shidler College of Business": [
         {
-            "question": "What are UH Manoa’s school colors?",
-            "options": ["a) Red and Yellow", "b) Green and White", "c) Blue and Gold", "d) Black and Silver"],
+            "question": "What university is Shidler College of Business a part of?",
+            "options": ["a) University of California", "b) University of Hawaii at Manoa", "c) University of Hawaii at Hilo", "d) University of Hawaii at West Oahu"],
             "answer": "b",
-            "explanation": "UH Manoa's school colors are green and white."
+            "explanation": "Shidler College of Business is part of the University of Hawaii at Manoa."
         },
         {
-            "question": "What is the mascot of UH Manoa?",
-            "options": ["a) Tiger", "b) Rainbow Warrior", "c) Shark", "d) Eagle"],
+            "question": "What is the name of the building where most Shidler College of Business classes are held?",
+            "options": ["a) Holmes Hall", "b) Shidler Hall", "c) Saunders Hall", "d) Hamilton Library"],
             "answer": "b",
-            "explanation": "The Rainbow Warrior is UH Manoa’s mascot."
+            "explanation": "Shidler Hall is the primary building for the college"
     
         },
         {
-            "question": "What is the main library at UH Manoa called?",
-            "options": ["a) Sinclair Library", "b) Hamilton Library", "c) Wong Library", "d) Manoa Library"],
-            "answer": "b",
-            "explanation": "Hamilton Library is the main library at UH Manoa."
-        },
-        {
-            "question": "Which college at UH Manoa focuses on business studies?",
-            "options": ["a) College of Arts & Sciences", "b) Shidler College of Business", "c) College of Engineering", "d) School of Medicine"],
-            "answer": "b",
-            "explanation": "Shidler College of Business is UH Manoa’s business school."
-        },
-        {
-            "question": "What year was UH Manoa founded?",
-            "options": ["a) 1907", "b) 1955", "c) 1890", "d) 1920"],
+            "question": "What is a popular business fraternity at Shidler College of Business?",
+            "options": ["a) Delta Sigma Pi", "b) Alpha Lambda Delta", "c) Phi Kappa Psi", "d) Kappa Kappa Gamma"],
             "answer": "a",
-            "explanation": "UH Manoa was founded in 1907 as a land-grant institution."
+            "explanation": "Delta Sigma Pi is a popular business fraternity at Shidler College of Business."
+        },
+        {
+            "question": "Who is the Shidler College of Business named after?",
+            "options": ["a) Jay H. Shidler", "b) Daniel Inouye", "c) Barack Obama", "d) Rick Kazman"],
+            "answer": "a",
+            "explanation": "Shidler College of Business is named after Jay H. Shidler."
+        },
+        {
+            "question": "What year was the Shidler College of Business renamed after Jay H. Shidler?",
+            "options": ["a) 2006", "b) 2010", "c) 1890", "d) 1920"],
+            "answer": "a",
+            "explanation": "The college was renamed in 2006 after alumnus Jay H. Shidler donated $25 million."
         }
     ]
 }

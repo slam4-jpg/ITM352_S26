@@ -79,7 +79,7 @@ def run_quiz():
     username = input("Enter your username: ")
     scores = load_high_scores()
 
-    categories = {"1": "Hawaii", "2": "UH Manoa"}
+    categories = {"1": "Hawaii", "2": "Shidler College of Business"}
 
     print("Choose a quiz category:")
     for key, value in categories.items():
