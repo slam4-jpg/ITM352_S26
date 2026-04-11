@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <title>Memes'R'Us</title>
+   <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=0.8">
+   <meta http-equiv="refresh" content="10; url=http://127.0.0.1:5000" />
+</head>
+
+<body style="text-align:center; font-family:Arial, sans-serif;">
+   <h1>Welcome to Memes'R'Us</h1>
+   <p>Here’s your Meme:</p>
+
+   {% if meme_url %}
+      <img src="{{ meme_url }}" alt="Wholesome Meme" style="max-width:600px; height:auto;"><br><br>
+      <p>Source subreddit: <strong>{{ subreddit }}</strong></p>
+   {% else %}
+      <p>Sorry, no meme could be loaded right now.</p>
+   {% endif %}
+</body>
+</html>
