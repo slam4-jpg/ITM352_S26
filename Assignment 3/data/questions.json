@@ -1,0 +1,83 @@
+{
+  "Hawaii": [
+    {
+      "question": "What is the capital of Hawaii?",
+      "options": ["Maui", "Hilo", "Honolulu", "Lihue"],
+      "answer": "Honolulu",
+      "explanation": "Honolulu is the capital and largest city of Hawaii.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the state fish of Hawaii?",
+      "options": ["Ahi", "Humuhumunukunukuapua'a", "Mahimahi", "Moi"],
+      "answer": "Humuhumunukunukuapua'a",
+      "explanation": "The Humuhumunukunukuapua'a is the official state fish of Hawaii.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Which island is known as the 'Big Island'?",
+      "options": ["Maui", "Oahu", "Kauai", "Hawaii"],
+      "answer": "Hawaii",
+      "explanation": "The island of Hawaii is the largest island in the state, hence the nickname 'Big Island'.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which Hawaiian island is known as the 'Garden Isle'?",
+      "options": ["Kauai", "Maui", "Lanai", "Molokai"],
+      "answer": "Kauai",
+      "explanation": "Kauai is called the Garden Isle because of its lush green mountains and frequent rain.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is Hawaii's state flower?",
+      "options": ["Hibiscus", "Plumeria", "Orchid", "Pikake"],
+      "answer": "Hibiscus",
+      "explanation": "The yellow hibiscus is the official state flower of Hawaii.",
+      "difficulty": "Medium"
+    }
+  ],
+  "Shidler College of Business": [
+    {
+      "question": "What university is Shidler College of Business a part of?",
+      "options": ["a) University of California", "b) University of Hawaii at Manoa", "c) University of Hawaii at Hilo", "d) University of Hawaii at West Oahu"],
+      "answer": "b",
+      "explanation": "Shidler College of Business is part of the University of Hawaii at Manoa.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the name of the building where most Shidler College of Business classes are held?",
+      "options": ["a) Holmes Hall", "b) Shidler Hall", "c) Saunders Hall", "d) Hamilton Library"],
+      "answer": "b",
+      "explanation": "Shidler Hall is the primary building for the college.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is a popular business fraternity at Shidler College of Business?",
+      "options": ["a) Delta Sigma Pi", "b) Alpha Lambda Delta", "c) Phi Kappa Psi", "d) Kappa Kappa Gamma"],
+      "answer": "a",
+      "explanation": "Delta Sigma Pi is a popular business fraternity at Shidler College of Business.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Who is the Shidler College of Business named after?",
+      "options": ["a) Jay H. Shidler", "b) Daniel Inouye", "c) Barack Obama", "d) Rick Kazman"],
+      "answer": "a",
+      "explanation": "Shidler College of Business is named after Jay H. Shidler.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What year was the Shidler College of Business renamed after Jay H. Shidler?",
+      "options": ["a) 2006", "b) 2010", "c) 1890", "d) 1920"],
+      "answer": "a",
+      "explanation": "The college was renamed in 2006 after alumnus Jay H. Shidler donated $25 million.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "What is the name of the graduate degree offered by Shidler College of Business?",
+      "options": ["a) Master of Business Administration (MBA)", "b) Master of Engineering (ME)", "c) Master of Public Health (MPH)", "d) Master of Social Work (MSW)"],
+      "answer": "a",
+      "explanation": "Shidler College of Business offers a Master of Business Administration (MBA) program, which is one of its most well-known graduate degrees.",
+      "difficulty": "Hard"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .answer-button {
+      margin: 8px;
+      padding: 10px;
+      width: 250px;
+      cursor: pointer;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: #eee;
+      border-radius: 8px;
+      margin-top: 20px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #4caf50;
+      transition: width 0.4s ease;
+    }
+
+    .correct {
+      background-color: #c8f7c5;
+    }
+
+    .incorrect {
+      background-color: #f7c5c5;
+    }
+  </style>
+</head>
+
+<body
+  data-answer="{{ question['answer'] }}"
+  data-explanation="{{ question['explanation'] | escape }}"
+  data-hint="{{ question['hint'] | escape }}"
+  data-hint-used="{{ 'true' if session.get('hint_used') else 'false' }}"
+>
+  <h2>Question {{ q_index + 1 }} of {{ total_questions }}</h2>
+  <p><strong>Difficulty:</strong> {{ question['difficulty'] }}</p>
+  <div class="question">{{ question['question'] }}</div>
+
+  <div id="options">
+    {% for option in question['options'] %}
+      {% set option_key = option.split(')')[0].strip() %}
+      <button type="button" class="answer-button" data-value="{{ option_key }}">{{ option }}</button><br>
+    {% endfor %}
+  </div>
+
+  <br>
+  <button type="button" id="hintBtn">Show Hint</button>
+  <br><br>
+
+  <div id="feedback" style="font-weight: bold;"></div>
+
+  <form action="{{ url_for('next_question') }}" method="post">
+    <input type="hidden" name="selected_answer" id="selectedAnswer">
+    <button id="nextBtn" type="submit" style="display: none;">Next Question</button>
+  </form>
+
+  <div class="progress-bar">
+    <div class="progress-bar-fill"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const correctAnswer = document.body.dataset.answer;
+      const explanation = document.body.dataset.explanation;
+      const hint = document.body.dataset.hint;
+      const selectedAnswerInput = document.getElementById('selectedAnswer');
+      const feedback = document.getElementById('feedback');
+      const nextBtn = document.getElementById('nextBtn');
+      const hintBtn = document.getElementById('hintBtn');
+      const progressBarFill = document.querySelector('.progress-bar-fill');
+      let hintUsed = document.body.dataset.hintUsed === "true";
+
+      progressBarFill.style.width = '{{ progress }}%';
+
+      if (hintUsed) {
+        hintBtn.disabled = true;
+      }
+
+      document.querySelectorAll('.answer-button').forEach(function (button) {
+        button.addEventListener('click', function () {
+          const selected = button.getAttribute('data-value');
+          selectedAnswerInput.value = selected;
+
+          document.querySelectorAll('.answer-button').forEach(btn => {
+            btn.disabled = true;
+          });
+
+          if (selected === correctAnswer) {
+            button.classList.add('correct');
+            feedback.textContent = "Correct! " + explanation;
+          } else {
+            button.classList.add('incorrect');
+            feedback.textContent = "Incorrect. " + explanation;
+          }
+
+          nextBtn.style.display = 'inline-block';
+        });
+      });
+
+      hintBtn.addEventListener('click', function () {
+        if (hintUsed) {
+          alert("You already used your hint.");
+          return;
+        }
+
+        alert("Hint: " + hint);
+        hintUsed = true;
+        hintBtn.disabled = true;
+
+        fetch('/use_hint', {
+          method: 'GET'
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to the Quiz Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Welcome to the Quiz Game!</h2>
+
+    {% if username %}
+        <p>Hello again, {{ username }}! Ready to take another quiz?</p>
+    {% endif %}
+
+    <form action="{{ url_for('set_username') }}" method="post">
+        <label for="username">Enter your name:</label>
+        <input type="text" name="username" value="{{ username or '' }}" required><br><br>
+
+        <label for="category">Choose Category:</label>
+        <select name="category" required>
+            {% for category in categories %}
+                <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>
+                    {{ category }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="difficulty">Choose Difficulty:</label>
+        <select name="difficulty" required>
+            <option value="Easy" {% if selected_difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+            <option value="Medium" {% if selected_difficulty == 'Medium' %}selected{% endif %}>Medium</option>
+            <option value="Hard" {% if selected_difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+        </select><br><br>
+
+        <button type="submit">Start Quiz</button>
+    </form>
+</body>
+</html>

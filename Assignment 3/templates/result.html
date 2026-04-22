@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Quiz Completed!</h2>
+    <p>Great job, {{ username }}!</p>
+    <p>Final Score: {{ score }} out of {{ total }}</p>
+
+    <h3>Leaderboard – Top 10 Scores</h3>
+    <ol>
+        {% for entry in leaderboard %}
+            <li>{{ entry['username'] }} - {{ entry['score'] }}</li>
+        {% endfor %}
+    </ol>
+
+    <a href="{{ url_for('index') }}"><button>Play Again</button></a>
+</body>
+</html>
