@@ -1,67 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DigiBooth | Preview</title>
+    <title>DigiBooth | Your Photostrip</title>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            margin: 0;
+            font-family: "Comic Sans MS", "Trebuchet MS", Arial, sans-serif;
+            background: #f7f7f7;
+            color: #2b2b2b;
             text-align: center;
-            background-color: #f7f2ff;
         }
 
         nav {
-            margin: 20px;
+            padding: 15px;
         }
 
         nav a {
-            margin: 10px;
-            text-decoration: none;
-            color: #4b3f72;
+            margin: 0 12px;
+            color: #333;
             font-weight: bold;
+            text-decoration: underline;
         }
 
-        .preview-box {
+        .preview-page {
+            position: relative;
+            width: 760px;
+            min-height: 900px;
+            margin: 20px auto;
+        }
+
+        .title {
+            font-size: 54px;
+            font-weight: bold;
+            line-height: 0.85;
+            margin-left: 180px;
+            margin-bottom: 5px;
+        }
+
+        .arrow {
+            font-size: 70px;
+            transform: rotate(25deg);
+            margin-left: 130px;
+            margin-bottom: -10px;
+        }
+
+        .strip {
+            width: 190px;
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            width: fit-content;
-            margin: auto;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border: 6px solid black;
+            padding: 0;
+            margin-left: 90px;
         }
 
-        .photo-strip {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: black;
-            padding: 15px;
-            width: fit-content;
-            margin: auto;
+        .strip img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            display: block;
+            border-bottom: 6px solid black;
         }
 
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 150px);
-            gap: 10px;
-            background: white;
-            padding: 15px;
-            margin: auto;
-        }
-
-        .single-photo {
-            background: white;
-            padding: 15px;
-            margin: auto;
-        }
-
-        img {
-            width: 150px;
-            border: 5px solid white;
+        .strip img:last-child {
+            border-bottom: none;
         }
 
         .filter-bw {
             filter: grayscale(100%);
+        }
+
+        .filter-color {
+            filter: none;
         }
 
         .filter-vintage {
@@ -72,73 +81,107 @@
             filter: brightness(125%);
         }
 
-        .frame-simple img {
-            border: 8px solid white;
+        .details {
+            position: absolute;
+            top: 330px;
+            left: 360px;
+            width: 310px;
+            text-align: left;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            background: white;
+            border: 4px solid black;
+            padding: 15px;
         }
 
-        .frame-purple img {
-            border: 8px solid #7b68ee;
+        .scissors {
+            position: absolute;
+            top: 690px;
+            left: 430px;
+            font-size: 90px;
         }
 
-        .frame-black img {
-            border: 8px solid black;
+        .buttons {
+            position: absolute;
+            top: 560px;
+            left: 360px;
+            width: 320px;
         }
 
         .button-link {
             display: inline-block;
-            margin: 10px;
-            padding: 10px 15px;
-            background-color: #7b68ee;
-            color: white;
-            border-radius: 8px;
+            margin: 8px;
+            padding: 13px 22px;
+            border: 4px solid black;
+            background: white;
+            color: black;
             text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+        }
+
+        .post {
+            background: #14c768;
+        }
+
+        .retake {
+            background: white;
         }
     </style>
 </head>
 
 <body>
 
-    <nav>
-        <a href="/">Home</a>
+<nav>
+    <a href="/">Home</a>
+
+    {% if session.get("username") %}
         <a href="/feed">Feed</a>
         <a href="/booth">Booth</a>
-    </nav>
+        <a href="/logout">Logout</a>
+    {% else %}
+        <a href="/signup">Sign Up</a>
+        <a href="/signin">Sign In</a>
+    {% endif %}
+</nav>
 
-    <div class="preview-box">
-        <h1>Preview Your Photobooth</h1>
+<div class="preview-page">
 
-        <div class="
-            {% if booth_data.layout_choice == 'strip' %}
-                photo-strip
-            {% elif booth_data.layout_choice == 'grid' %}
-                photo-grid
-            {% else %}
-                single-photo
-            {% endif %}
+    <div class="title">
+        your<br>
+        photostrip!
+    </div>
 
-            frame-{{ booth_data.frame_choice }}
-        ">
+    <div class="arrow">↩</div>
 
-            {% for image in booth_data.image_filenames %}
-                <img 
-                    class="filter-{{ booth_data.filter_choice }}"
-                    src="{{ url_for('static', filename='uploads/' + image) }}"
-                    alt="Uploaded photobooth image"
-                >
-            {% endfor %}
+    <div class="strip">
+        {% for image in booth_data.image_filenames %}
+            <img 
+                class="filter-{{ booth_data.filter_choice }}"
+                src="{{ url_for('static', filename='uploads/' + image) }}"
+                alt="Photobooth photo"
+            >
+        {% endfor %}
+    </div>
 
-        </div>
-
-        <h3>Your Choices</h3>
+    <div class="details">
+        <h3>Selected Options</h3>
         <p><strong>Filter:</strong> {{ booth_data.filter_choice }}</p>
         <p><strong>Frame:</strong> {{ booth_data.frame_choice }}</p>
         <p><strong>Layout:</strong> {{ booth_data.layout_choice }}</p>
-        <p><strong>Username:</strong> {{ booth_data.username }}</p>
-        <p><strong>Timestamp:</strong> {{ booth_data.timestamp }}</p>
-
-        <a class="button-link" href="/booth">Back / Edit</a>
-        <a class="button-link" href="/booth_next">Continue</a>
+        <p><strong>User:</strong> {{ booth_data.username }}</p>
+        <p><strong>Time:</strong> {{ booth_data.timestamp }}</p>
     </div>
+
+    <div class="buttons">
+        <a class="button-link retake" href="/booth">Retake</a>
+        <a class="button-link post" href="/booth_next">Post</a>
+    </div>
+
+    <div class="scissors">✂</div>
+
+</div>
 
 </body>
 </html>

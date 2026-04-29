@@ -12,7 +12,7 @@ import smtplib
 from email.message import EmailMessage
 from flask import Flask, render_template, request, redirect, session, url_for
 from werkzeug.utils import secure_filename
-
+import base64
 
 # Create the Flask application
 app = Flask(__name__)
@@ -293,6 +293,10 @@ def signup_submit():
             message=None,
             error="Account was created, but the confirmation email could not be sent. Please check that the email address is real and typed correctly. If this is a school email, make sure it can receive outside messages."
         )
+@app.route("/logout")
+def logout():
+    session.clear()   # removes username + any session data
+    return redirect("/")
 
 @app.route("/confirm")
 def confirm():
@@ -391,13 +395,70 @@ def booth():
         error=None
     )
 
+@app.route("/booth_capture", methods=["POST"])
+def booth_capture():
+    """
+    Handles photos taken from the camera in booth.html.
+    Saves captured images to static/uploads.
+    """
 
-@app.route("/booth_upload", methods=["POST"])
-def booth_upload():
-    """
-    Handles photobooth image uploads.
-    Allows multiple images for a photo strip style preview.
-    """
+    if "username" not in session:
+        return render_template(
+            "signin.html",
+            error="Please sign in before using the photobooth."
+        )
+
+    captured_images = request.form.getlist("captured_images")
+
+    filter_choice = request.form.get("filter_choice", "none")
+    frame_choice = request.form.get("frame_choice", "classic")
+    layout_choice = request.form.get("layout_choice", "strip")
+
+    if not captured_images:
+        return render_template(
+            "booth.html",
+            username=session["username"],
+            error="Please take at least one photo first."
+        )
+
+    saved_images = []
+
+    for image_data in captured_images:
+        if "," in image_data:
+            image_data = image_data.split(",")[1]
+
+        try:
+            image_bytes = base64.b64decode(image_data)
+        except Exception:
+            return render_template(
+                "booth.html",
+                username=session["username"],
+                error="Photo could not be saved. Please retake your photos."
+            )
+
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")
+        filename = f"{session['username']}_{timestamp}.png"
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+
+        with open(file_path, "wb") as image_file:
+            image_file.write(image_bytes)
+
+        saved_images.append(filename)
+
+    booth_data = {
+        "image_filenames": saved_images,
+        "filter_choice": filter_choice,
+        "frame_choice": frame_choice,
+        "layout_choice": layout_choice,
+        "username": session["username"],
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    session["booth_data"] = booth_data
+
+    return render_template("booth_preview.html", booth_data=booth_data)
+
+    
 
     if "username" not in session:
         return render_template(

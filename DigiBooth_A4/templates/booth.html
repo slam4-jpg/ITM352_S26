@@ -295,8 +295,7 @@
                     <option value="purple">Purple Frame</option>
                 </select>
 
-                <button class="preview-button" type="submit">Preview / Print Strip</button>
-                <button class="clear-button" type="button" onclick="clearPhotos()">Clear</button>
+<button class="preview-button" type="submit">Preview / Post</button>                <button class="clear-button" type="button" onclick="clearPhotos()">Clear</button>
             </div>
         </form>
 
@@ -409,32 +408,34 @@
             }, 1000);
         }
 
-        function takePhoto() {
-            const context = canvas.getContext("2d");
+       function takePhoto() {
+    const context = canvas.getContext("2d");
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+    canvas.width = 300;
+    canvas.height = 380;
 
-            if (currentFilter === "bw") {
-                context.filter = "grayscale(100%)";
-            } else {
-                context.filter = "none";
-            }
+    if (currentFilter === "bw") {
+        context.filter = "grayscale(100%)";
+    } else {
+        context.filter = "none";
+    }
 
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            const imageData = canvas.toDataURL("image/png");
+    const imageData = canvas.toDataURL("image/jpeg", 0.45);
 
-            const previewImage = document.createElement("img");
-            previewImage.src = imageData;
-            capturedPreview.appendChild(previewImage);
+    const previewImage = document.createElement("img");
+    previewImage.src = imageData;
+    capturedPreview.appendChild(previewImage);
 
-            const hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = "captured_images";
-            hiddenInput.value = imageData;
-            hiddenImages.appendChild(hiddenInput);
-        }
+    const hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.name = "captured_images";
+    hiddenInput.value = imageData;
+    hiddenImages.appendChild(hiddenInput);
+}
+
+           
 
         function clearPhotos() {
             capturedPreview.innerHTML = "";
