@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up - DigiBooth</title>
+
+    <!-- Links to the CSS stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <h1>Create Your DigiBooth Account</h1>
+
+    <p>
+        Sign up with your UH email to join the DigiBooth community.
+    </p>
+
+    <!-- 
+        If Flask sends an error message to this page,
+        this block displays it to the user.
+    -->
+    {% if error %}
+        <p class="error-message">{{ error }}</p>
+    {% endif %}
+
+    <!-- 
+        Sign-up form.
+        action="/signup_submit" tells the form where to send the data.
+        method="POST" keeps form data out of the URL and sends it securely through the request body.
+    -->
+    <form action="/signup_submit" method="POST">
+
+        <!-- User's full name -->
+        <label>Name:</label>
+        <input type="text" name="name" placeholder="Enter your name">
+
+        <!-- Username for their DigiBooth profile -->
+        <label>Username:</label>
+        <input type="text" name="username" placeholder="Choose a username">
+
+        <!-- Email address; later this will be checked for @hawaii.edu -->
+        <label>Hawaii.edu Email:</label>
+        <input type="email" name="email" placeholder="example@hawaii.edu">
+
+        <!-- Submit button sends the form to /signup_submit -->
+        <button type="submit">Create Account</button>
+
+    </form>
+
+    <!-- Link back to home page -->
+    <a href="/">Back Home</a>
+
+</body>
+</html>

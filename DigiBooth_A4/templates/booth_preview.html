@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DigiBooth | Preview</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f7f2ff;
+        }
+
+        nav {
+            margin: 20px;
+        }
+
+        nav a {
+            margin: 10px;
+            text-decoration: none;
+            color: #4b3f72;
+            font-weight: bold;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: fit-content;
+            margin: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .photo-strip {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: black;
+            padding: 15px;
+            width: fit-content;
+            margin: auto;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 150px);
+            gap: 10px;
+            background: white;
+            padding: 15px;
+            margin: auto;
+        }
+
+        .single-photo {
+            background: white;
+            padding: 15px;
+            margin: auto;
+        }
+
+        img {
+            width: 150px;
+            border: 5px solid white;
+        }
+
+        .filter-bw {
+            filter: grayscale(100%);
+        }
+
+        .filter-vintage {
+            filter: sepia(65%) contrast(110%);
+        }
+
+        .filter-bright {
+            filter: brightness(125%);
+        }
+
+        .frame-simple img {
+            border: 8px solid white;
+        }
+
+        .frame-purple img {
+            border: 8px solid #7b68ee;
+        }
+
+        .frame-black img {
+            border: 8px solid black;
+        }
+
+        .button-link {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: #7b68ee;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/feed">Feed</a>
+        <a href="/booth">Booth</a>
+    </nav>
+
+    <div class="preview-box">
+        <h1>Preview Your Photobooth</h1>
+
+        <div class="
+            {% if booth_data.layout_choice == 'strip' %}
+                photo-strip
+            {% elif booth_data.layout_choice == 'grid' %}
+                photo-grid
+            {% else %}
+                single-photo
+            {% endif %}
+
+            frame-{{ booth_data.frame_choice }}
+        ">
+
+            {% for image in booth_data.image_filenames %}
+                <img 
+                    class="filter-{{ booth_data.filter_choice }}"
+                    src="{{ url_for('static', filename='uploads/' + image) }}"
+                    alt="Uploaded photobooth image"
+                >
+            {% endfor %}
+
+        </div>
+
+        <h3>Your Choices</h3>
+        <p><strong>Filter:</strong> {{ booth_data.filter_choice }}</p>
+        <p><strong>Frame:</strong> {{ booth_data.frame_choice }}</p>
+        <p><strong>Layout:</strong> {{ booth_data.layout_choice }}</p>
+        <p><strong>Username:</strong> {{ booth_data.username }}</p>
+        <p><strong>Timestamp:</strong> {{ booth_data.timestamp }}</p>
+
+        <a class="button-link" href="/booth">Back / Edit</a>
+        <a class="button-link" href="/booth_next">Continue</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign In - DigiBooth</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Sign In</h1>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form action="/signin_submit" method="POST">
+        <label>Username or Email:</label>
+        <input type="text" name="username_or_email" required>
+
+        <button type="submit">Sign In</button>
+    </form>
+
+    <p>Don't have an account?</p>
+    <a href="/signup">Create Account</a>
+
+    <br><br>
+    <a href="/">Back to Home</a>
+</body>
+</html>
