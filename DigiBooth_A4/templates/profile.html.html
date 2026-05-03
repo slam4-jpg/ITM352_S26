@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@{{ username }} - DigiBooth</title>
+</head>
+<body>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/feed">Feed</a>
+    <a href="/booth">Booth</a>
+</nav>
+
+<h1>@{{ username }}</h1>
+
+{% if posts %}
+    {% for post in posts %}
+        <p>{{ post.caption }}</p>
+        <p>{{ post.tags }}</p>
+    {% endfor %}
+{% else %}
+    <p>No posts yet.</p>
+{% endif %}
+
+</body>
+</html>

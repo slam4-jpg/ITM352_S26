@@ -1,45 +1,35 @@
-# Import Flask tools
-# Flask = creates the web app
-# render_template = loads HTML files from templates folder
-# request = gets form data submitted by the user
-# redirect = sends the user to another route/page
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
 from datetime import datetime
 import secrets
 import os
 import smtplib
 from email.message import EmailMessage
-from flask import Flask, render_template, request, redirect, session, url_for
-from werkzeug.utils import secure_filename
 import base64
 
-# Create the Flask application
 app = Flask(__name__)
 app.secret_key = "digibooth_secret_key"
-UPLOAD_FOLDER = "static/uploads"
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
+UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# --------------------------------
-# DATABASE & EMAIL HELPER FUNCTIONS
-# --------------------------------
-def allowed_file(filename):
-    """
-    Checks if uploaded file is an accepted image type.
-    """
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-# Additions of database helper function 
 DATABASE = "digibooth.db"
 
-# Database user table function 
+
+# --------------------------------
+# DATABASE HELPERS
+# --------------------------------
+
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
 def create_users_table():
-    """
-    Creates the users table.
-    This table stores account information for DigiBooth users.
-    """
     conn = get_db_connection()
 
     conn.execute("""
@@ -56,38 +46,21 @@ def create_users_table():
 
     conn.commit()
     conn.close()
-def get_db_connection():
-    """
-    Opens a connection to the SQLite database.
-    row_factory lets us access columns by name instead of index.
-    """
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
-# UH Email Validation Function 
+def validate_required_fields(name, username, email):
+    return bool(name and username and email)
+
+
 def validate_hawaii_email(email):
-    """
-    Checks that the user entered a hawaii.edu email.
-    This helps limit DigiBooth sign-ups to UH users.
-    """
     return email.lower().endswith("@hawaii.edu")
 
-# Confirmation code function
+
 def generate_confirmation_code():
-    """
-    Generates a secure random 6-digit confirmation code.
-    This code will be emailed to the user later.
-    """
     return str(secrets.randbelow(900000) + 100000)
 
-# Duplicate User Check 
+
 def user_exists(username, email):
-    """
-    Checks whether a username or email is already in the database.
-    Prevents duplicate accounts.
-    """
     conn = get_db_connection()
 
     existing_user = conn.execute(
@@ -99,12 +72,8 @@ def user_exists(username, email):
 
     return existing_user is not None
 
-# Saves user
+
 def save_new_user(name, username, email, confirmation_code):
-    """
-    Saves a new user to the SQLite database.
-    New users are saved as unconfirmed until they enter the correct code.
-    """
     conn = get_db_connection()
 
     conn.execute(
@@ -125,14 +94,31 @@ def save_new_user(name, username, email, confirmation_code):
     conn.commit()
     conn.close()
 
-# Automated email confirmation 
-def send_confirmation_email(to_email, confirmation_code):
-    """
-    Sends the confirmation code to the user's hawaii.edu email.
-    Email login information is stored in environment variables
-    instead of being written directly in the code.
-    """
 
+def confirm_user_email(email, confirmation_code):
+    conn = get_db_connection()
+
+    user = conn.execute(
+        "SELECT * FROM users WHERE email = ? AND confirmation_code = ?",
+        (email, confirmation_code)
+    ).fetchone()
+
+    if user is None:
+        conn.close()
+        return False
+
+    conn.execute(
+        "UPDATE users SET confirmed = 1 WHERE email = ?",
+        (email,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return True
+
+
+def send_confirmation_email(to_email, confirmation_code):
     sender_email = os.getenv("DIGIBOOTH_EMAIL")
     sender_password = os.getenv("DIGIBOOTH_EMAIL_PASSWORD")
 
@@ -171,22 +157,11 @@ The DigiBooth Team
         print("Email failed to send:", error)
         return False
 
+
 # --------------------------------
-# INITIAL HELPER FUNCTIONS
+# BASIC ROUTES
 # --------------------------------
 
-def validate_required_fields(name, username, email):
-    """
-    Checks that the user filled out all required sign-up fields.
-    Returns True if all fields are filled in.
-    Returns False if any field is missing.
-    """
-    if not name or not username or not email:
-        return False
-    return True
-
-
-# Cleaned up route section 
 @app.route("/")
 def home():
     return render_template("home.html")
@@ -200,6 +175,62 @@ def signup():
 @app.route("/signin")
 def signin():
     return render_template("signin.html", error=None)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
+
+
+# --------------------------------
+# SIGN UP / SIGN IN ROUTES
+# --------------------------------
+
+@app.route("/signup_submit", methods=["POST"])
+def signup_submit():
+    name = request.form.get("name", "").strip()
+    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip().lower()
+
+    if not validate_required_fields(name, username, email):
+        return render_template(
+            "signup.html",
+            error="All fields are required. Please complete the full form."
+        )
+
+    if not validate_hawaii_email(email):
+        return render_template(
+            "signup.html",
+            error="Please use a valid @hawaii.edu email address."
+        )
+
+    if user_exists(username, email):
+        return render_template(
+            "signin.html",
+            error="That account already exists. Please sign in instead."
+        )
+
+    confirmation_code = generate_confirmation_code()
+
+    save_new_user(name, username, email, confirmation_code)
+
+    email_sent = send_confirmation_email(email, confirmation_code)
+
+    if email_sent:
+        return render_template(
+            "confirm_email.html",
+            email=email,
+            message="Account created! We sent a confirmation code to your email.",
+            error=None
+        )
+
+    return render_template(
+        "confirm_email.html",
+        email=email,
+        message=None,
+        error="Account was created, but the confirmation email could not be sent."
+    )
 
 
 @app.route("/signin_submit", methods=["POST"])
@@ -240,120 +271,24 @@ def signin_submit():
         )
 
     session["username"] = user["username"]
+
+    if "posts" not in session:
+        session["posts"] = []
+
     return redirect("/feed")
 
 
-
-@app.route("/signup_submit", methods=["POST"])
-def signup_submit():
-    """
-    Handles the sign-up form submission.
-    Validates fields, checks hawaii.edu email, prevents duplicate users,
-    generates a confirmation code, and saves the user to SQLite.
-    """
-
-    name = request.form.get("name", "").strip()
-    username = request.form.get("username", "").strip()
-    email = request.form.get("email", "").strip().lower()
-
-    if not validate_required_fields(name, username, email):
-        return render_template(
-            "signup.html",
-            error="All fields are required. Please complete the full form."
-        )
-
-    if not validate_hawaii_email(email):
-        return render_template(
-            "signup.html",
-            error="Please use a valid @hawaii.edu email address."
-        )
-
-    if user_exists(username, email):
-        return render_template(
-            "signin.html",
-            error="That account already exists. Please sign in instead."
-        )
-    confirmation_code = generate_confirmation_code()
-
-    save_new_user(name, username, email, confirmation_code)
-
-    email_sent = send_confirmation_email(email, confirmation_code)
-
-    if email_sent:
-        return render_template(
-            "confirm_email.html",
-            email=email,
-            message="Account created! We sent a confirmation code to your email.",
-            error=None
-        )
-    else:
-        return render_template(
-            "confirm_email.html",
-            email=email,
-            message=None,
-            error="Account was created, but the confirmation email could not be sent. Please check that the email address is real and typed correctly. If this is a school email, make sure it can receive outside messages."
-        )
-@app.route("/logout")
-def logout():
-    session.clear()   # removes username + any session data
-    return redirect("/")
+# --------------------------------
+# EMAIL CONFIRMATION ROUTES
+# --------------------------------
 
 @app.route("/confirm")
 def confirm():
-    """
-    Displays the email confirmation page.
-    """
     return render_template("confirm_email.html", error=None, message=None)
-
-
-@app.route("/feed")
-def feed():
-    """
-    Feed page route.
-    Users must be signed in before viewing the feed.
-    """
-    if "username" not in session:
-        return render_template(
-            "signin.html",
-            error="Please sign in before viewing the feed."
-        )
-
-    return render_template("feed.html", username=session["username"])
-
-def confirm_user_email(email, confirmation_code):
-    """
-    Checks whether the email and confirmation code match a user in the database.
-    If they match, the user's account is marked as confirmed.
-    """
-    conn = get_db_connection()
-
-    user = conn.execute(
-        "SELECT * FROM users WHERE email = ? AND confirmation_code = ?",
-        (email, confirmation_code)
-    ).fetchone()
-
-    if user is None:
-        conn.close()
-        return False
-
-    conn.execute(
-        "UPDATE users SET confirmed = 1 WHERE email = ?",
-        (email,)
-    )
-
-    conn.commit()
-    conn.close()
-
-    return True
 
 
 @app.route("/confirm_submit", methods=["POST"])
 def confirm_submit():
-    """
-    Handles confirmation form submission.
-    If the code is correct, the user account becomes active.
-    """
-
     email = request.form.get("email", "").strip().lower()
     confirmation_code = request.form.get("confirmation_code", "").strip()
 
@@ -370,24 +305,57 @@ def confirm_submit():
             error=None,
             message="Your account has been confirmed! Please sign in to continue."
         )
-    
+
     return render_template(
         "confirm_email.html",
         error="Invalid email or confirmation code.",
         message=None
-        )
+    )
+
+
+# --------------------------------
+# FEED ROUTE
+# --------------------------------
+@app.route("/feed")
+def feed():
+    if "username" not in session:
+        return redirect("/signin")
+
+    search_query = request.args.get("q", "").strip().lower()
+    posts = session.get("posts", [])
+
+    if search_query:
+        filtered_posts = []
+
+        for post in posts:
+            username = post.get("username", "").lower()
+            caption = post.get("caption", "").lower()
+            tags = post.get("tags", "").lower()
+
+            if (
+                search_query in username
+                or search_query in caption
+                or search_query in tags
+            ):
+                filtered_posts.append(post)
+
+        posts = filtered_posts
+
+    return render_template(
+        "feed.html",
+        username=session["username"],
+        posts=posts,
+        search_query=search_query
+    )
+
+# --------------------------------
+# PHOTOBOOTH ROUTES
+# --------------------------------
 
 @app.route("/booth")
 def booth():
-    """
-    Photobooth page.
-    User must be signed in.
-    """
     if "username" not in session:
-        return render_template(
-            "signin.html",
-            error="Please sign in before using the photobooth."
-        )
+        return redirect("/signin")
 
     return render_template(
         "booth.html",
@@ -395,18 +363,11 @@ def booth():
         error=None
     )
 
+
 @app.route("/booth_capture", methods=["POST"])
 def booth_capture():
-    """
-    Handles photos taken from the camera in booth.html.
-    Saves captured images to static/uploads.
-    """
-
     if "username" not in session:
-        return render_template(
-            "signin.html",
-            error="Please sign in before using the photobooth."
-        )
+        return redirect("/signin")
 
     captured_images = request.form.getlist("captured_images")
 
@@ -456,76 +417,26 @@ def booth_capture():
 
     session["booth_data"] = booth_data
 
-    return render_template("booth_preview.html", booth_data=booth_data)
+    return redirect("/booth_preview")
 
-    
 
+@app.route("/booth_preview")
+def booth_preview():
     if "username" not in session:
-        return render_template(
-            "signin.html",
-            error="Please sign in before uploading photos."
-        )
+        return redirect("/signin")
 
-    uploaded_files = request.files.getlist("images")
+    booth_data = session.get("booth_data")
 
-    filter_choice = request.form.get("filter_choice", "none")
-    frame_choice = request.form.get("frame_choice", "none")
-    layout_choice = request.form.get("layout_choice", "single")
-
-    if not uploaded_files or uploaded_files[0].filename == "":
-        return render_template(
-            "booth.html",
-            username=session["username"],
-            error="Please upload at least one image."
-        )
-
-    saved_images = []
-
-    for image in uploaded_files:
-        if image.filename == "":
-            continue
-
-        if not allowed_file(image.filename):
-            return render_template(
-                "booth.html",
-                username=session["username"],
-                error="Invalid file type. Please upload PNG, JPG, JPEG, or GIF images."
-            )
-
-        safe_filename = secure_filename(image.filename)
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        final_filename = f"{session['username']}_{timestamp}_{safe_filename}"
-
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"], final_filename)
-        image.save(file_path)
-
-        saved_images.append(final_filename)
-
-    booth_data = {
-        "image_filenames": saved_images,
-        "filter_choice": filter_choice,
-        "frame_choice": frame_choice,
-        "layout_choice": layout_choice,
-        "username": session["username"],
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
-
-    session["booth_data"] = booth_data
+    if booth_data is None:
+        return redirect("/booth")
 
     return render_template("booth_preview.html", booth_data=booth_data)
 
 
 @app.route("/booth_next")
 def booth_next():
-    """
-    Placeholder page for the next phase.
-    No post database is created yet.
-    """
     if "username" not in session:
-        return render_template(
-            "signin.html",
-            error="Please sign in first."
-        )
+        return redirect("/signin")
 
     booth_data = session.get("booth_data")
 
@@ -534,15 +445,46 @@ def booth_next():
 
     return render_template("booth_next.html", booth_data=booth_data)
 
+
+@app.route("/post_to_feed", methods=["POST"])
+def post_to_feed():
+    if "username" not in session:
+        return redirect("/signin")
+
+    booth_data = session.get("booth_data")
+
+    if booth_data is None:
+        return redirect("/booth")
+
+    caption = request.form.get("caption", "").strip()
+    tags = request.form.get("tags", "").strip()
+
+    new_post = {
+        "image_filenames": booth_data["image_filenames"],
+        "filter_choice": booth_data["filter_choice"],
+        "frame_choice": booth_data["frame_choice"],
+        "layout_choice": booth_data["layout_choice"],
+        "username": session["username"],
+        "timestamp": booth_data["timestamp"],
+        "caption": caption,
+        "tags": tags
+    }
+
+    posts = session.get("posts", [])
+    posts.append(new_post)
+    session["posts"] = posts
+
+    session.pop("booth_data", None)
+
+    return redirect("/feed")
+
+
 # --------------------------------
-# RUN THE APPLICATION
+# RUN APP
 # --------------------------------
 
-# This makes the app run only when we directly run app.py.
-# debug=True helps during development because it shows errors
-# and reloads the app when we save changes.
-# Ensures the database/table exists every time the app is ran.
+
 if __name__ == "__main__":
     create_users_table()
     app.run(debug=True)
-    
+

@@ -37,11 +37,12 @@
 
         .booth-area {
             position: relative;
-            width: 850px;
+            width: 950px;
             margin: 0 auto;
         }
 
         .camera-frame {
+            position: relative;
             width: 360px;
             height: 440px;
             margin: 25px auto;
@@ -49,6 +50,7 @@
             padding: 18px;
             background: white;
             box-shadow: 0 0 0 8px white, 0 0 0 13px black;
+            overflow: visible;
         }
 
         video {
@@ -57,10 +59,167 @@
             object-fit: cover;
             border: 5px solid black;
             background: #777;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
         }
 
         canvas {
             display: none;
+        }
+  .price-bubble {
+            position: absolute;
+            right: 140px;
+            top: 300px;
+            width: 100px;
+            height: 100px;
+            border: 5px solid black;
+            border-radius: 60%;
+            background: white;
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.1;
+            
+        }
+        .frame-doodles {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+        }
+
+        .frame-doodles span {
+            position: absolute;
+            font-weight: bold;
+            color: black;
+            font-size: 24px;
+        }
+
+        .frame-classic .frame-doodles::before {
+            content: "";
+        }
+
+        .frame-pink {
+            border-color: #ff8fc7;
+            box-shadow: 0 0 0 8px #ffe1f0, 0 0 0 13px black;
+            background: #fff2f8;
+        }
+
+        .frame-pink .frame-doodles::before {
+            content: "♡  ✿  ♡";
+            position: absolute;
+            top: -8px;
+            left: 65px;
+            font-size: 28px;
+            color: #ff5fa2;
+        }
+
+        .frame-pink .frame-doodles::after {
+            content: "cute!";
+            position: absolute;
+            bottom: -5px;
+            right: 20px;
+            font-size: 24px;
+            color: #ff5fa2;
+            transform: rotate(-8deg);
+        }
+
+        .frame-stars {
+            border-color: #111;
+            background: #fffbe8;
+            box-shadow: 0 0 0 8px #fff3a8, 0 0 0 13px black;
+        }
+
+        .frame-stars .frame-doodles::before {
+            content: "✦   ✧   ✦";
+            position: absolute;
+            top: 5px;
+            left: 45px;
+            font-size: 32px;
+        }
+
+        .frame-stars .frame-doodles::after {
+            content: "shine!";
+            position: absolute;
+            bottom: 8px;
+            left: 20px;
+            font-size: 24px;
+            transform: rotate(8deg);
+        }
+
+        .frame-hearts {
+            background: #fff5f5;
+            border-color: #ff4f6d;
+            box-shadow: 0 0 0 8px #ffd6df, 0 0 0 13px black;
+        }
+
+        .frame-hearts .frame-doodles::before {
+            content: "♥ ♥ ♥";
+            position: absolute;
+            top: 8px;
+            right: 35px;
+            font-size: 30px;
+            color: #ff3158;
+        }
+
+        .frame-hearts .frame-doodles::after {
+            content: "xoxo";
+            position: absolute;
+            bottom: 8px;
+            left: 25px;
+            font-size: 25px;
+            color: #ff3158;
+            transform: rotate(-10deg);
+        }
+
+        .frame-clouds {
+            background: #eef8ff;
+            border-color: #68bdfc;
+            box-shadow: 0 0 0 8px #d8f0ff, 0 0 0 13px black;
+        }
+
+        .frame-clouds .frame-doodles::before {
+            content: "☁ ☁ ☁";
+            position: absolute;
+            top: 5px;
+            left: 50px;
+            font-size: 30px;
+            color: #399de0;
+        }
+
+        .frame-clouds .frame-doodles::after {
+            content: "dreamy";
+            position: absolute;
+            bottom: 7px;
+            right: 18px;
+            font-size: 24px;
+            color: #399de0;
+            transform: rotate(7deg);
+        }
+
+        .frame-film {
+            background: repeating-linear-gradient(
+                90deg,
+                white 0px,
+                white 22px,
+                black 22px,
+                black 30px
+            );
+            box-shadow: 0 0 0 8px white, 0 0 0 13px black;
+        }
+
+        .frame-film .frame-doodles::before {
+            content: "PHOTO STRIP";
+            position: absolute;
+            top: 4px;
+            left: 88px;
+            font-size: 20px;
+            background: white;
+            padding: 2px 10px;
+            border: 3px solid black;
         }
 
         .eye-level {
@@ -71,22 +230,8 @@
             font-weight: bold;
         }
 
-        .price-bubble {
-            position: absolute;
-            right: 145px;
-            top: 330px;
-            width: 95px;
-            height: 95px;
-            border: 5px solid black;
-            border-radius: 50%;
-            background: white;
-            font-size: 28px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.1;
-        }
+        
+      
 
         .controls-row {
             display: flex;
@@ -167,17 +312,17 @@
             margin-bottom: 10px;
         }
 
-        .green-button {
+        .red-button {
             width: 42px;
             height: 42px;
             border-radius: 50%;
-            background: #14c768;
+            background: #e63946;
             border: 4px solid black;
             margin: 20px auto;
             cursor: pointer;
         }
 
-        .green-button:disabled {
+        .red-button:disabled {
             background: gray;
             cursor: not-allowed;
         }
@@ -254,16 +399,13 @@
 
     <div class="booth-area">
 
-        <div class="eye-level">
-            eye<br>level →
-        </div>
+        <div class="eye-level">eye<br>level →</div>
 
-        <div class="price-bubble">
-            $0<br>=<br>4 pics
-        </div>
+        <div class="price-bubble">$0<br>=<br>4 pics</div>
 
-        <div class="camera-frame">
+        <div class="camera-frame frame-pink" id="cameraFrame">
             <video id="camera" autoplay playsinline></video>
+            <div class="frame-doodles"></div>
             <canvas id="canvas"></canvas>
         </div>
 
@@ -284,18 +426,22 @@
             <div id="hiddenImages"></div>
 
             <input type="hidden" name="filter_choice" id="filterChoice" value="bw">
-            <input type="hidden" name="frame_choice" value="classic">
             <input type="hidden" name="layout_choice" value="strip">
 
             <div class="hidden-options">
                 <label>Frame:</label>
-                <select name="frame_choice">
-                    <option value="classic">Classic Black Frame</option>
-                    <option value="simple">Simple White Frame</option>
-                    <option value="purple">Purple Frame</option>
+
+                <select name="frame_choice" id="frameSelect" onchange="changeFrame()">
+                     <option value="classic">Classic Black</option>
+                    <option value="pink" selected>Pink Cute</option>
+                    <option value="stars">Doodle Stars</option>
+                    <option value="hearts">Doodle Hearts</option>
+                    <option value="clouds">Doodle Clouds</option>
+                    <option value="film">Film Strip</option>
                 </select>
 
-<button class="preview-button" type="submit">Preview / Post</button>                <button class="clear-button" type="button" onclick="clearPhotos()">Clear</button>
+                <button class="preview-button" type="submit">Preview / Post</button>
+                <button class="clear-button" type="button" onclick="clearPhotos()">Clear</button>
             </div>
         </form>
 
@@ -310,13 +456,13 @@
             </div>
             <div class="instruction">
                 <span>3</span>
-                Press the green button and wait for 4 photos
+                Press the red button and wait for 4 photos
             </div>
         </div>
 
         <div class="start-machine">
             <div class="machine-label">start</div>
-            <button class="green-button" id="startButton" type="button" onclick="startPhotoSession()"></button>
+            <button class="red-button" id="startButton" type="button" onclick="startPhotoSession()"></button>
             <div class="slot"></div>
             <div class="print-box"></div>
         </div>
@@ -333,6 +479,8 @@
         const startButton = document.getElementById("startButton");
         const filterToggle = document.getElementById("filterToggle");
         const filterChoice = document.getElementById("filterChoice");
+        const frameSelect = document.getElementById("frameSelect");
+        const cameraFrame = document.getElementById("cameraFrame");
 
         let photosTaken = 0;
         const totalPhotos = 4;
@@ -347,6 +495,19 @@
                 alert("Camera access is needed to use the photobooth.");
                 console.log(error);
             });
+
+        function changeFrame() {
+            cameraFrame.classList.remove(
+                "frame-classic",
+                "frame-pink",
+                "frame-stars",
+                "frame-hearts",
+                "frame-clouds",
+                "frame-film"
+            );
+
+            cameraFrame.classList.add("frame-" + frameSelect.value);
+        }
 
         function toggleFilter() {
             if (currentFilter === "bw") {
@@ -408,7 +569,7 @@
             }, 1000);
         }
 
-       function takePhoto() {
+      function takePhoto() {
     const context = canvas.getContext("2d");
 
     canvas.width = 300;
@@ -421,6 +582,76 @@
     }
 
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    context.filter = "none";
+
+    const selectedFrame = frameSelect.value;
+
+    if (selectedFrame === "pink") {
+        context.strokeStyle = "#ff8fc7";
+        context.lineWidth = 8;
+        context.strokeRect(8, 8, canvas.width - 16, canvas.height - 16);
+
+        context.fillStyle = "#ff5fa2";
+        context.font = "bold 24px Comic Sans MS";
+        context.fillText("♡ ✿ ♡", 85, 28);
+
+        context.save();
+        context.translate(225, 365);
+        context.rotate(-0.15);
+        context.fillText("cute!", 0, 0);
+        context.restore();
+    }
+
+    if (selectedFrame === "stars") {
+        context.strokeStyle = "#111";
+        context.lineWidth = 8;
+        context.strokeRect(8, 8, canvas.width - 16, canvas.height - 16);
+
+        context.fillStyle = "#111";
+        context.font = "bold 26px Comic Sans MS";
+        context.fillText("✦ ✧ ✦", 90, 30);
+        context.fillText("shine!", 20, 360);
+    }
+
+    if (selectedFrame === "hearts") {
+        context.strokeStyle = "#ff4f6d";
+        context.lineWidth = 8;
+        context.strokeRect(8, 8, canvas.width - 16, canvas.height - 16);
+
+        context.fillStyle = "#ff3158";
+        context.font = "bold 26px Comic Sans MS";
+        context.fillText("♥ ♥ ♥", 180, 30);
+        context.fillText("xoxo", 20, 360);
+    }
+
+    if (selectedFrame === "clouds") {
+        context.strokeStyle = "#68bdfc";
+        context.lineWidth = 8;
+        context.strokeRect(8, 8, canvas.width - 16, canvas.height - 16);
+
+        context.fillStyle = "#399de0";
+        context.font = "bold 25px Comic Sans MS";
+        context.fillText("☁ ☁ ☁", 80, 30);
+        context.fillText("dreamy", 185, 360);
+    }
+
+    if (selectedFrame === "film") {
+        context.strokeStyle = "black";
+        context.lineWidth = 10;
+        context.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+
+        context.fillStyle = "white";
+        context.fillRect(85, 8, 130, 28);
+
+        context.strokeStyle = "black";
+        context.lineWidth = 3;
+        context.strokeRect(85, 8, 130, 28);
+
+        context.fillStyle = "black";
+        context.font = "bold 16px Comic Sans MS";
+        context.fillText("PHOTO STRIP", 95, 28);
+    }
 
     const imageData = canvas.toDataURL("image/jpeg", 0.45);
 
@@ -435,7 +666,7 @@
     hiddenImages.appendChild(hiddenInput);
 }
 
-           
+
 
         function clearPhotos() {
             capturedPreview.innerHTML = "";
@@ -445,6 +676,8 @@
             photoCountText.textContent = "Photos taken: 0 / 4";
             startButton.disabled = false;
         }
+
+        changeFrame();
     </script>
 
 </body>
